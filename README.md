@@ -1,0 +1,1 @@
+Simple template for new React apps with basic settings of ESLint and Stylelint, SCSS Modules  with autocomplete etc.
