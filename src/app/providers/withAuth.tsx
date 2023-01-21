@@ -4,8 +4,9 @@ import React, {
 } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
-import { api, User } from 'shared';
+import { api } from 'shared';
 
+interface User {}
 interface Auth {
     token: string;
     onLogin:(user: User)=>Promise<void>;

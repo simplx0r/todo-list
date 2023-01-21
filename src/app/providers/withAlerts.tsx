@@ -4,13 +4,13 @@ import React, {
   createContext, PropsWithChildren, useContext, useMemo, useState,
 } from 'react';
 import { Alert, AlertColor } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 
 interface Alerts {
     alertStatus: AlertColor | undefined;
     alertText: string;
-    success:(text: string, timeout: number) => void;
-    error:(text: string, timeout: number)=>void;
+    success:(text: string, timeout?: number) => void;
+    error:(text: string, timeout?: number)=>void;
     clear: ()=> void;
 }
 const AlertContext = createContext<Alerts>({} as Alerts);

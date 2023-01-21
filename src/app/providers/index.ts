@@ -1,5 +1,5 @@
 export { withRouter } from './withRouter';
 export { withTheme } from './withTheme';
-export { withAuth } from './withAuth';
-export { withAlerts } from './withAlerts';
+export { withAuth, useAuth } from './withAuth';
+export { withAlerts, useAlert } from './withAlerts';
 export { withReactQuery } from './withReactQuery';

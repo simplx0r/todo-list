@@ -14,8 +14,8 @@ function AppComponent() {
   return (
     <>
       <Header />
-      <Routing />
 
+      <Routing />
     </>
   );
 }

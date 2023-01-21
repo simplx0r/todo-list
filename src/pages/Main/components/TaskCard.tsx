@@ -1,15 +1,21 @@
-import { Typography, Checkbox } from '@mui/material';
+/* eslint-disable no-restricted-imports */
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable no-bitwise */
+import {
+  Typography, Switch, SwitchProps,
+} from '@mui/material';
 import { Box, styled } from '@mui/system';
 import React, {
-  createContext, useContext, useMemo, useState,
+  useState, useMemo,
 } from 'react';
+import { Unfinished, Finished } from 'app/assets';
 
 interface TaskCardProps {
     label: string;
     description: string;
 }
 
-const TaskBar = styled(Box)(({ color }: TaskBarProps) => ({
+const TaskBar = styled(Box)(({ color }: {color: string}) => ({
   height: '40px',
   backgroundColor: `${color}`,
   borderRadius: '3px',
@@ -18,18 +24,20 @@ const TaskBar = styled(Box)(({ color }: TaskBarProps) => ({
 
 const TaskCardContainer = styled(Box)({
   display: 'flex',
+  width: '93%',
   justifyContent: 'space-between',
 
 });
 
-const TaskTitle = styled(Typography)({
+const TaskTitle = styled(Typography)(({ isFinished }: {isFinished: boolean}) => ({
   fontFamily: 'Abhaya',
   fontStyle: 'normal',
   fontWeight: 600,
   fontSize: '24px',
   lineHeight: '28px',
   color: '#f4f4f4',
-});
+  textDecoration: isFinished ? 'line-through' : '',
+}));
 
 const TaskDescription = styled(Typography)({
   fontFamily: 'Abhaya',
@@ -40,44 +48,91 @@ const TaskDescription = styled(Typography)({
   color: 'rgba(255, 255, 255, 0.6)',
 });
 
-const TaskDescContainer = styled(Typography)({
-  display: 'flex',
-  flexDirection: 'column',
+const TodoCheckbox = styled((props: SwitchProps) => (
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+))(({ checked }) => ({
+  width: '55px',
+  height: '35px',
+  padding: 0,
+  borderRadius: '20px',
+  '& .MuiSwitch-switchBase': {
+    padding: 0,
+    margin: 2,
+    transitionDuration: '300ms',
+    '&.Mui-checked': {
+      transform: 'translateX(19px)',
 
+      '& + .MuiSwitch-track': {
+
+        opacity: 1,
+        border: 0,
+      },
+      '&.Mui-disabled + .MuiSwitch-track': {
+        opacity: 0.5,
+      },
+    },
+    '&.Mui-focusVisible .MuiSwitch-thumb': {
+
+      border: '6px solid #fff',
+      boxShadow: 'inset 0px 0px 10px 3px rgba(0, 0, 0, 0.25)',
+    },
+
+  },
+  '& .MuiSwitch-thumb': {
+    boxSizing: 'border-box',
+    width: '28px',
+    height: '28px',
+    margin: '2px',
+    backgroundColor: '#f4f4f4',
+    '&:before': {
+      content: "''",
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      left: 0,
+      top: 0,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      backgroundImage: checked ? `url(${Finished})` : `url(${Unfinished})`,
+    },
+
+  },
+  '& .MuiSwitch-track': {
+    borderRadius: '20px',
+    backgroundColor: checked ? '#10C200 !important' : '#366EFF !important',
+    opacity: 1,
+
+  },
+}));
+
+const TaskTitleContainer = styled(Box)({
+  display: 'flex',
+  gap: '12px',
+  height: 'fit-content',
+  width: '100%',
 });
 
-interface Colors {
-    label: string;
-}
-interface TaskBarProps {
-    color: (label: string)=>string;
-}
-
+const TaskWithLabelContainer = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+});
 const TaskCard = ({ label, description }: TaskCardProps) => {
   const [completed, setCompleted] = useState(false);
-
   const checkboxHandler = () => setCompleted((prev) => !prev);
-
-  const generateRandomColor = (todoLabel: string) => {
-    if (prevColors[todoLabel]) {
-      return prevColors[todoLabel];
-    }
-    // eslint-disable-next-line no-bitwise
-    setPrevColors({ ...prevColors, [label]: `#${((1 << 24) * Math.random() | 0).toString(16).padStart(6, '0')}` });
-    return prevColors[todoLabel];
-  };
-
+  const getColor = useMemo(() => `#${((1 << 24) * Math.random() | 0).toString(16).padStart(6, '0')}`, []);
   return (
-
     <TaskCardContainer>
-      <TaskBar color={() => generateRandomColor(label)} />
-      <TaskDescContainer>
-        <TaskTitle>{label}</TaskTitle>
-        <TaskDescription>{description}</TaskDescription>
-      </TaskDescContainer>
-      <Checkbox checked={completed} onChange={checkboxHandler} />
-    </TaskCardContainer>
+      <TaskTitleContainer>
+        <TaskBar color={getColor} />
+        <TaskWithLabelContainer>
+          <TaskTitle isFinished={completed}>{label}</TaskTitle>
+          <TaskDescription>{description}</TaskDescription>
+        </TaskWithLabelContainer>
+      </TaskTitleContainer>
 
+      <TodoCheckbox checked={completed} onChange={checkboxHandler} />
+    </TaskCardContainer>
   );
 };
-export { TaskCard, TaskCardProps };
+export { TaskCard, TaskBar };
+export type { TaskCardProps };

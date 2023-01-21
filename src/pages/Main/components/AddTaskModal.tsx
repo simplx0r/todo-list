@@ -3,16 +3,16 @@ import React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
+
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { useForm } from 'react-hook-form';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import FormGroup from '@mui/material/FormGroup';
+
 import FormHelperText from '@mui/material/FormHelperText';
 import TextField from '@mui/material/TextField';
+
 import { TaskCardProps } from './TaskCard';
 
 interface AddTaskModalProps {
@@ -22,38 +22,55 @@ interface AddTaskModalProps {
 }
 
 const DialogButton = styled(Button)({
-  backgroundColor: '#000',
+  backgroundColor: '#424242',
+  color: '#fff',
 });
-const AddTaskInput = styled(TextField)({
-  padding: '20px',
+const AddTaskDialog = styled(Dialog)({
+
+});
+const AddTaskDialogContent = styled(DialogContent)({});
+const AddTaskDialogTitle = styled(DialogTitle)({
+  paddingBottom: '8px',
+
+});
+const AddTaskFormGroup = styled(DialogContent)({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '30px',
+  padding: 0,
+  width: '100%',
+
 });
 
+const AddTaskInput = styled(TextField)({
+  marginTop: '5px',
+});
 function AddTaskModal({ isOpened, addTask, closeModal }: AddTaskModalProps) {
   const { register, handleSubmit } = useForm<TaskCardProps>();
   return (
-    <Dialog open={isOpened} onClose={closeModal} aria-labelledby="add task">
-      <DialogTitle id="add-task">Add Task</DialogTitle>
-      <DialogContent>
+    <AddTaskDialog open={isOpened} onClose={closeModal} aria-labelledby="add task">
+      <AddTaskDialogTitle id="add-task">Add Task</AddTaskDialogTitle>
+      <AddTaskDialogContent>
         <FormControl component="fieldset">
-          <FormGroup>
+          <AddTaskFormGroup>
             <AddTaskInput
               id="task-name"
-              label="Task name"
               {...register('label', { required: true })}
               required
-
+              fullWidth
+              label="Task Name"
             />
             <AddTaskInput
-              id="task-name"
-              label="Task description..."
+              id="task-description"
               {...register('description', { required: true })}
               required
-
+              fullWidth
+              label="Task Description"
             />
-          </FormGroup>
+          </AddTaskFormGroup>
           <FormHelperText> </FormHelperText>
         </FormControl>
-      </DialogContent>
+      </AddTaskDialogContent>
       <DialogActions>
         <DialogButton onClick={closeModal}>
           Cancel
@@ -62,7 +79,7 @@ function AddTaskModal({ isOpened, addTask, closeModal }: AddTaskModalProps) {
           Add task
         </DialogButton>
       </DialogActions>
-    </Dialog>
+    </AddTaskDialog>
   );
 }
 

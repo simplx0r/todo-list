@@ -1,34 +1,53 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
-import { styled } from '@mui/system';
+import React, { useRef, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
-  Box, Typography, IconButton, FormControlLabel, Checkbox, checkboxClasses, touchRippleClasses, svgIconClasses, MenuItem, Menu,
+  Box, Typography, IconButton,
 } from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+
 import SettingsIcon from '@mui/icons-material/Settings';
+
 import { colors } from 'shared';
-import { TaskCard } from './TaskCard';
-import { AddTaskModal } from './AddTaskModal';
+
 import { MenuWithNews } from './MenuWithNews';
+
+import { Tasks } from './Tasks';
 
 const TodoContainer = styled(Box)({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
   borderRadius: '30px',
   width: '390px',
+  height: '844px',
   maxHeight: '844px',
+  overflowY: 'auto',
+  '&::-webkit-scrollbar': {
+    width: '0.4em',
+  },
+  '&::-webkit-scrollbar-track': {
+    boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+    webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: '#424242',
+
+    boxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.3)',
+    borderRadius: '20px',
+  },
   margin: '0 auto',
   flexDirection: 'column',
   padding: '13px 17px 37px 39px',
   backgroundColor: `${colors.todoBg}`,
   color: '#f4f4f4',
+  gap: '32px',
 });
 
 const TodoHeaderContainer = styled(Box)({
   display: 'flex',
   width: '100%',
   justifyContent: 'space-between',
+  position: 'sticky',
+  top: '10px',
 });
 
 const TodoHeaderTitle = styled(Typography)({
@@ -36,83 +55,44 @@ const TodoHeaderTitle = styled(Typography)({
   fontSize: '36px',
   lineHeight: '43px',
   fontWeight: '400',
-});
-const TodayTasksContainer = styled(Box)({
-  display: 'flex',
-  width: '100%',
-});
-const TodayCheckbox = styled(Checkbox)({
-  [`&, &.${checkboxClasses.checked}`]: {
-    color: '#f4f4f4',
-  },
-  [`&, &.${touchRippleClasses.ripple}`]: {
-    borderRadius: '16px',
-  },
 
 });
 
-const CheckboxTitle = styled(FormControlLabel)({
-  fontFamily: 'Abhaya',
-  fontSize: '24px',
-  lineHeight: '28px',
-  fontWeight: 600,
-  color: '#f4f4f4',
+const TodoSettingsIcon = styled(SettingsIcon)({
+  fill: '#f4f4f4',
+  width: '30px',
+  height: '30px',
 });
-const AddSvg = styled(AddCircleOutlineIcon)({
-  color: '#fff',
-});
-interface Task {
-    label: string;
-    description: string;
-}
-
-const TodayTasks = () => {
-  const [isChecked, setChecked] = useState(false);
-  const [showModal, setShowModalTask] = useState(false);
-  const checkboxHandler = () => setChecked((prev) => !prev);
-  const changeShowModal = () => setShowModalTask((prev) => !prev);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const addTaskHandler = (data: Task) => { setTasks((prev) => [...prev, data]); };
-
-  return (
-    <TodayTasksContainer>
-      <CheckboxTitle
-        label="Today tasks:"
-        control={(
-          <TodayCheckbox
-            checked={isChecked}
-            onChange={checkboxHandler}
-            size="medium"
-          />
-          )}
-      />
-      <IconButton aria-label="add task" onClick={changeShowModal}><AddSvg /></IconButton>
-      {showModal && (
-      <AddTaskModal
-        isOpened={showModal}
-        addTask={addTaskHandler}
-        closeModal={changeShowModal}
-      />
-      )}
-      {isChecked ? tasks.map((task) => <TaskCard {...task} />) : ''}
-
-    </TodayTasksContainer>
-  );
-};
 
 const TodoList = () => {
   const [isMenuOpened, setMenuOpened] = useState(false);
+  const iconRef = useRef<SVGSVGElement | null>(null);
+  const openMenuHandler = () => setMenuOpened((prev) => !prev);
+
+  const dayInMonth = Array(30).fill('').map((_, index) => (index <= 9 ? `0${index + 1}` : `${index + 1}`));
+  const generateCurrentDate = (currentDay: string) => {
+    const monthFromDate = new Date().getMonth() + 1;
+    const curMonth = monthFromDate <= 9 ? `0${monthFromDate}` : `${monthFromDate}`;
+    return `${curMonth} / ${currentDay}`;
+  };
   return (
     <TodoContainer>
       <TodoHeaderContainer>
         <TodoHeaderTitle>To Do</TodoHeaderTitle>
         <IconButton>
-          <SettingsIcon />
-          <MenuWithNews isOpen={isMenuOpened} onClose={() => { setMenuOpened((prev) => !prev); }} />
+          <TodoSettingsIcon onClick={openMenuHandler} ref={iconRef} />
+          {iconRef.current && (
+          <MenuWithNews
+            isOpen={isMenuOpened}
+            closeHandler={openMenuHandler}
+            anchor={iconRef.current}
+          />
+          )}
 
         </IconButton>
       </TodoHeaderContainer>
-      <TodayTasks />
+      <Tasks day="today" />
+      {dayInMonth.map((day) => <Tasks key={day} day={generateCurrentDate(day)} />)}
     </TodoContainer>
   );
 };
